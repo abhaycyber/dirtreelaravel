@@ -8,6 +8,17 @@ use Illuminate\Http\Request;
 
 class FolderController extends Controller
 {
+
+
+    public function deleteFolder(Request $request)
+    {
+
+            $param = $request->all();
+
+            $delete = folder::deleteFolder($param['id']);
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -22,6 +33,7 @@ class FolderController extends Controller
 
         $data = folder::getAllFolderName();
 
+    
         $data = json_decode(json_encode((array) $data), true);
 
          
@@ -34,10 +46,12 @@ class FolderController extends Controller
             $i = 1;
             foreach ($data as $data2) {
 
+            if($data2['ParentIdActive'] == 1){
                 if ($data2['ParentId'] == $data1['folderId']) {
 
                     $array1[] = $data2;
                 }
+            }
 
                 $i++;
             }
@@ -51,8 +65,16 @@ class FolderController extends Controller
 
         $data = folder::getAllData();
 
+      //  echo "<pre>";
+      //  print_r($data);
+      //  die;
+
+
         $data = json_decode(json_encode((array) $data), true);
 
+      // echo "<pre>";
+       // print_r($data);
+       // die;
 
         $FolderFiles = [];
         foreach ($data as $data1) {
@@ -61,13 +83,13 @@ class FolderController extends Controller
 
             $i = 1;
             foreach ($data as $data2) {
-
+                if($data2['ParentIdActive'] == 1){
                 if ($data2['folderId'] == $data1['folderId']) {
 
                     $array1[] = $data2;
                 }
 
-
+            }
                 $i++;
             }
 
@@ -79,31 +101,43 @@ class FolderController extends Controller
 
             if ($finalArray1['ParentId'] == '' || $finalArray1['ParentId'] == 0) {
 
-                echo '<span style="color:red;"><b>' . $finalArray1['foldername'] . '</b></span><br/><br/>';
+                $folderId = $finalArray1['folderId'];
+                echo '<span style="color:red;"><b>' . $finalArray1['foldername'] . '</b></span><span><input type="button" value="delete" onclick="deletefolder('.$folderId.')"></span><br/><br/>';
 
                 if (isset($FolderFiles[$finalArray1['folderId']])) {
                     foreach ($FolderFiles[$finalArray1['folderId']] as $files) {
 
                         if (isset($files['fileName'])) {
-
-                            echo '<span style="color:blue;">&nbsp;&nbsp;->' . $files['fileName'] . '</span><br/><br/>';
-                        }
+                            if($files['ParentIdActive'] == 1){
+                                if($files['filIsActive'] == 1){
+                            $fileId = $files['fileId'];
+                            echo '<span style="color:blue;">&nbsp;&nbsp;->' . $files['fileName'] . '</span><span><input type="button" value="delete" onclick="deletefile('.$fileId.')"></span><br/><br/>';
+                        } }
+                    }
                     }
                 }
 
                 foreach ($finalArray1 as $finalArray2) {
 
                     if (isset($finalArray2['foldeName'])) {
-
-                        echo '<span style="color:red;">&nbsp;&nbsp;->' . $finalArray2['foldeName'] . '<span><br/><br/>';
+                        $folderId = $finalArray2['folderId'];
+                        echo '<span style="color:red;">&nbsp;&nbsp;->' . $finalArray2['foldeName'] . '</span><span><input type="button" value="delete" onclick="deletefolder('.$folderId.')"></span><br/><br/>';
 
                         if (isset($FolderFiles[$finalArray2['folderId']])) {
 
                             foreach ($FolderFiles[$finalArray2['folderId']] as $files) {
+                              
 
                                 if (isset($files['fileName'])) {
 
-                                    echo '<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;->' . $files['fileName'] . '</span><br/><br/>';
+                                    if($files['ParentIdActive'] == 1){
+
+                                        if($files['filIsActive'] == 1){
+
+                                    $fileId = $files['fileId'];
+                                    echo '<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;->' . $files['fileName'] . '</span><span><input type="button" value="delete" onclick="deletefile('.$fileId.')"></span><br/><br/>';
+
+                                    } }
                                 }
                             }
                         }
@@ -115,17 +149,21 @@ class FolderController extends Controller
 
                                 if (is_int($key)) {
 
+                                    $folderId = $insideChieldFolderCol['folderId'];
 
-                                    echo '&nbsp;&nbsp;&nbsp;&nbsp;->' . $insideChieldFolderCol['foldeName'] . '<br/><br/>';
+                                    echo '&nbsp;&nbsp;&nbsp;&nbsp;->' . $insideChieldFolderCol['foldeName'] . '<span><input type="button" value="delete" onclick="deletefolder('.$folderId.')"></span><br/><br/>';
 
                                     if (isset($FolderFiles[$insideChieldFolderCol['folderId']])) {
 
                                         foreach ($FolderFiles[$insideChieldFolderCol['folderId']] as $files) {
 
                                             if (isset($files['fileName'])) {
-
-                                                echo '<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;->' . $files['fileName'] . '</span><br/><br/>';
-                                            }
+                                                if($files['ParentIdActive'] == 1){
+                                                    if($files['filIsActive'] == 1){
+                                                $fileId = $files['fileId'];    
+                                                echo '<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;->' . $files['fileName'] . '</span><span><input type="button" value="delete" onclick="deletefile('.$fileId.')"></span><br/><br/>';
+                                            } }
+                                        }
                                         }
                                     }
 
@@ -139,8 +177,12 @@ class FolderController extends Controller
                             foreach ($FolderFiles[$finalArray2['folderId']] as $files) {
 
                                 if (isset($files['fileName'])) {
-
-                                    echo '<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;->' . $files['fileName'] . '</span><br/><br/>';
+                                    if($files['ParentIdActive'] == 1){
+                                        if($files['filIsActive'] == 1){
+                                    $fileId = $files['fileId'];
+                                    echo '<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;->' . $files['fileName'] . '</span><span><input type="button" value="delete" onclick="deletefile('.$fileId.')"></span><br/><br/>';
+                                    }
+                                }
                                 }
                             }
                         }
@@ -149,12 +191,10 @@ class FolderController extends Controller
                 echo "<br/>";
             }
         }
+       
+        return view('dirtree');
 
-        die;
-
-
-
-    }
+ }
 
       // Recursive function for creating the unlimited level tree
 
@@ -169,26 +209,33 @@ class FolderController extends Controller
 
                 if (is_int($key1)) {
 
+                    $folderId = $chield2['folderId'];
+
+
                     for ($j = 0; $j < $counter; $j++) {
 
                         echo "&nbsp;&nbsp;&nbsp;";
                     }
 
-                    echo '&nbsp;&nbsp;&nbsp;&nbsp;->' . $chield2['foldeName'] . '<br/><br/>';
+                    echo '&nbsp;&nbsp;&nbsp;&nbsp;->' . $chield2['foldeName'] . '<span><input type="button" value="delete" onclick="deletefolder('.$folderId.')"></span><br/><br/>';
 
                     if (isset($FolderFiles[$chield2['folderId']])) {
 
                         foreach ($FolderFiles[$chield2['folderId']] as $files) {
 
                             if (isset($files['fileName'])) {
+                                if($files['ParentIdActive'] == 1){
+                                    if($files['filIsActive'] == 1){
+                                $fileId = $files['fileId'];
 
                                 for ($j = 0; $j < $counter; $j++) {
 
                                     echo "&nbsp;&nbsp;&nbsp;&nbsp;";
                                 }
 
-                                echo '<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;->' . $files['fileName'] . '</span><br/><br/>';
-                            }
+                                echo '<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;->' . $files['fileName'] . '</span><span><input type="button" value="delete" onclick="deletefile('.$fileId.')"></span><br/><br/>';
+                            } }
+                        }
                         }
                     }
 

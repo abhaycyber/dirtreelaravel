@@ -20,3 +20,15 @@ use App\Http\Controllers\FilesController;
 }); */
 
 Route::get('/', [FolderController::class, 'index']);
+
+
+Route::post('/deleteFolder', [FolderController::class, 'deleteFolder']);
+
+Route::post('/deleteFiles', [FilesController::class, 'deleteFiles']);
+
+
+
+
+
+
+

@@ -16,6 +16,15 @@ class FilesController extends Controller
     {
         //
     }
+    
+    public function deleteFiles(Request $request)
+    {
+
+            $param = $request->all();
+
+            $delete = files::deleteFiles($param['id']);
+    }
+
 
     /**
      * Show the form for creating a new resource.
